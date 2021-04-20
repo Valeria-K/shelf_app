@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: src/frontend/Dockerfile
+    depends_on:
+      -  backend
+    ports:
+      - "${FRONTEND_PORT}:8080"
+    volumes:
+      - ./src/frontend:/opt/frontend
+    environment:
+      - HOST=0.0.0.0
+      - PORT=${FRONTEND_PORT}
+      - CHOKIDAR_USEPOLLING=true
+      - API_HOST=${BACKEND_RUNNING_ON}
+      - API_PORT=${BACKEND_PORT}
+  backend:
+    build:
+      context: .
+      dockerfile: src/backend/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "${BACKEND_PORT}:8000"
+    volumes:
+      - ./src/backend:/opt/backend
+    environment:
+      - PYTHONPATH=/opt/backend
+      - DJANGO_SETTINGS_MODULE=shelf.settings
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+
+volumes:
+  pgdata:
