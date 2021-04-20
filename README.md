@@ -7,7 +7,7 @@ Simple CRUD app for books
 ![image](page.png)
 
 # Install dependencies for vue
-- `cd src\frontend`
+- `cd src/frontend`
 - `npm install`
 
 # Run app with docker compose 
